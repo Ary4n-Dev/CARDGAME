@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Match-da-Card &bull; Cozy 2-Player Card Memory Game</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Gaegu:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="landing.css" />
+</head>
+<body>
+
+  <!-- Floating animated doodle background elements -->
+  <div class="doodle-float star star-1">✦</div>
+  <div class="doodle-float star star-2">✧</div>
+  <div class="doodle-float star star-3">✦</div>
+  <div class="doodle-float star star-4">✦</div>
+  <div class="doodle-float star star-5">✧</div>
+  <div class="doodle-float heart-float heart-1">♥</div>
+  <div class="doodle-float heart-float heart-2">♥</div>
+  <div class="doodle-float spade-float spade-1">♠</div>
+  <div class="doodle-float spade-float spade-2">♠</div>
+
+  <!-- SVG Filters for Genuine Rough Crayon Texture (based on user wax crayon reference) -->
+  <svg class="svg-filters" xmlns="http://www.w3.org/2000/svg" width="0" height="0" style="position: absolute; width: 0; height: 0; overflow: hidden; pointer-events: none;" aria-hidden="true">
+    <defs>
+      <!-- Rough crayon border stroke filter -->
+      <filter id="crayon-border" x="-10%" y="-10%" width="120%" height="120%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.05 0.22" numOctaves="3" result="noise" />
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="2.8" xChannelSelector="R" yChannelSelector="G" />
+      </filter>
+
+      <!-- Rough crayon line stroke filter -->
+      <filter id="crayon-line" x="-10%" y="-10%" width="120%" height="120%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.04 0.25" numOctaves="4" result="noise" />
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="3" xChannelSelector="R" yChannelSelector="G" />
+      </filter>
+
+      <!-- Rough crayon stroke aliases -->
+      <filter id="crayon-rough" x="-10%" y="-10%" width="120%" height="120%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.05 0.22" numOctaves="3" result="noise" />
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="2.8" xChannelSelector="R" yChannelSelector="G" />
+      </filter>
+      <filter id="crayon-stroke" x="-10%" y="-10%" width="120%" height="120%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.04 0.25" numOctaves="4" result="noise" />
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="3" xChannelSelector="R" yChannelSelector="G" />
+      </filter>
+    </defs>
+  </svg>
+
+  <!-- Main Container -->
+  <div class="landing-page">
+
+    <!-- Top Navigation -->
+    <header class="landing-header">
+      <div class="brand">
+        <svg class="brand-icon-svg" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="2" y="5" width="16" height="21" rx="3" fill="#FFE2E8" stroke="#E05C73" stroke-width="1.8" transform="rotate(-10 2 5)"/>
+          <path d="M7 13 C7 11 9 9.5 11 11 C13 9.5 15 11 15 13 C15 15.5 11 18 11 18 C11 18 7 15.5 7 13 Z" fill="#E05C73"/>
+          <rect x="10" y="3" width="16" height="21" rx="3" fill="#E6EEF8" stroke="#3A5A8C" stroke-width="1.8" transform="rotate(8 10 3)"/>
+          <path d="M18 9 C16 11.5 13.5 13.5 13.5 15 C13.5 16.5 14.8 17.5 16.2 17.5 C17.2 17.5 18 16.8 18 16.8 C18 16.8 18.8 17.5 19.8 17.5 C21.2 17.5 22.5 16.5 22.5 15 C22.5 13.5 20 11.5 18 9 Z" fill="#3A5A8C"/>
+        </svg>
+        <span class="brand-name">Match-da-Card</span>
+      </div>
+      <div class="nav-right">
+        <span class="brand-pill">
+          <svg class="ui-icon-svg" viewBox="0 0 16 16" width="14" height="14" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-right:4px;">
+            <circle cx="8" cy="8" r="7" fill="#FFE2E8"/>
+            <path d="M8 4 C6 5.5 6 7.5 8 9 C10 7.5 10 5.5 8 4 Z" fill="#E05C73"/>
+            <path d="M5.5 7 C6.5 5.5 8.5 5.5 8 8 C6 8.5 5 8 5.5 7 Z" fill="#F07890"/>
+            <path d="M10.5 7 C9.5 5.5 7.5 5.5 8 8 C10 8.5 11 8 10.5 7 Z" fill="#F07890"/>
+          </svg>
+          2-Player Turn Based
+        </span>
+        <a href="index.html" class="nav-play-btn">
+          <svg class="btn-icon-svg" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:16px; height:16px; margin-right:4px;">
+            <rect x="2" y="5" width="16" height="10" rx="4" fill="#3A5A8C" stroke="#223C64" stroke-width="1.3"/>
+            <path d="M6 7.5 V12.5 M3.5 10 H8.5" stroke="#FFE2E8" stroke-width="1.3" stroke-linecap="round"/>
+            <circle cx="12.5" cy="8.5" r="1" fill="#FFE885"/>
+            <circle cx="14.5" cy="10.5" r="1" fill="#E05C73"/>
+          </svg>
+          Play Now
+        </a>
+      </div>
+    </header>
+
+    <!-- Hero Section -->
+    <main class="hero-section">
+      <div class="hero-content">
+        <div class="badge-tag">
+          <svg class="badge-tag-svg" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M8 1 L9.8 5.8 L15 8 L9.8 10.2 L8 15 L6.2 10.2 L1 8 L6.2 5.8 Z" fill="#F4C430" stroke="#B8860B" stroke-width="1"/>
+          </svg>
+          Cozy &amp; Live Multiplayer Memory Game
+          <svg class="badge-tag-svg" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M8 1 L9.8 5.8 L15 8 L9.8 10.2 L8 15 L6.2 10.2 L1 8 L6.2 5.8 Z" fill="#F4C430" stroke="#B8860B" stroke-width="1"/>
+          </svg>
+        </div>
+        <h1 class="hero-title">
+          Flip, match &amp; outsmart your friends in real time!
+        </h1>
+        <p class="hero-subtitle">
+          A hand-drawn pastel card matching duel. Create a private room in one click, share your 6-digit code, and battle your friend live — or pass &amp; play on one screen.
+        </p>
+
+        <!-- Room Action Box on Landing -->
+        <div class="hero-action-box">
+          <div class="action-top">
+            <a href="index.html?action=create" class="btn-hero-primary">
+              <svg class="btn-icon-svg" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M10 2L12.2 7.8L18 10L12.2 12.2L10 18L7.8 12.2L2 10L7.8 7.8L10 2Z" fill="#F4C430" stroke="#B8860B" stroke-width="1.3"/>
+                <circle cx="15.5" cy="4.5" r="1.5" fill="#E05C73"/>
+              </svg>
+              Create a Room
+            </a>
+            <div class="join-cluster">
+              <input type="text" id="landing-join-code" placeholder="Enter 6-digit code..." maxlength="8" autocomplete="off" />
+              <button class="btn-hero-join" id="btn-landing-join">
+                <svg class="btn-icon-svg" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M10 2 C13 2 16 5 15 11 L16.5 13.5 L13.5 13.5 L13 16 L10 14 L7 16 L6.5 13.5 L3.5 13.5 L5 11 C4 5 7 2 10 2 Z" fill="#3A5A8C" stroke="#223C64" stroke-width="1.2"/>
+                  <circle cx="10" cy="7" r="2" fill="#FFE2E8"/>
+                  <path d="M8.5 16 L10 19 L11.5 16 Z" fill="#E05C73"/>
+                </svg>
+                Join
+              </button>
+            </div>
+          </div>
+          <div class="action-bottom">
+            <a href="index.html" class="link-pass-play">
+              <svg class="ui-icon-svg" viewBox="0 0 20 20" width="15" height="15" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-right:4px;">
+                <circle cx="7" cy="7" r="3.5" fill="#FFE2E8" stroke="#E05C73" stroke-width="1.2"/>
+                <circle cx="13" cy="7" r="3.5" fill="#E0F7ED" stroke="#2EC484" stroke-width="1.2"/>
+                <path d="M2.5 16 C2.5 13 4.5 12 7 12 C9.5 12 11.5 13 11.5 16" stroke="#E05C73" stroke-width="1.2" stroke-linecap="round"/>
+                <path d="M11 13 C12.5 12.2 14.5 12.5 16 13.5 C17 14.2 17.5 15.2 17.5 16" stroke="#2EC484" stroke-width="1.2" stroke-linecap="round"/>
+              </svg>
+              Or Pass &amp; Play locally on one screen &rarr;
+            </a>
+          </div>
+        </div>
+
+        <!-- Quick Stats / Highlights -->
+        <div class="hero-perks">
+          <div class="perk-item">
+            <svg class="perk-icon-svg" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M11 2L4 11H10L9 18L16 9H10L11 2Z" fill="#F4C430" stroke="#B8860B" stroke-width="1.2" stroke-linejoin="round"/>
+            </svg>
+            <span>Zero install, instant live sync</span>
+          </div>
+          <div class="perk-item">
+            <svg class="perk-icon-svg" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="3" y="2" width="11" height="15" rx="2" fill="#E6EEF8" stroke="#3A5A8C" stroke-width="1.2"/>
+              <rect x="6" y="4" width="11" height="15" rx="2" fill="#FFE2E8" stroke="#E05C73" stroke-width="1.2"/>
+            </svg>
+            <span>Full 52-card standard deck</span>
+          </div>
+          <div class="perk-item">
+            <svg class="perk-icon-svg" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M10 2 C15 2 18 5 18 10 C18 15 15 18 10 18 C7 18 5 16.5 5 14.5 C5 13 6 12 7.5 12 C9 12 9.5 11 9.5 10 C9.5 9 8.5 8 7 8 C4 8 2 5.5 2 10 C2 5 5 2 10 2 Z" fill="#FFF2D6" stroke="#C88E36" stroke-width="1.2"/>
+              <circle cx="6.5" cy="5.5" r="1.3" fill="#E05C73"/>
+              <circle cx="11.5" cy="5" r="1.3" fill="#2EC484"/>
+              <circle cx="15" cy="8.5" r="1.3" fill="#3A5A8C"/>
+              <circle cx="14" cy="13" r="1.3" fill="#F4C430"/>
+            </svg>
+            <span>Soft crayon doodle aesthetic</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hero Visual: Interactive 3D Card Showcase -->
+      <div class="hero-visual">
+        <div class="card-stage">
+          <!-- Card 1: Flipped Heart Ace -->
+          <div class="showcase-card showcase-c1 face-up heart">
+            <div class="card-inner">
+              <div class="card-face card-front">
+                <div class="card-corner card-corner-tl">
+                  <b class="c-rank">A</b><span class="c-suit">♥</span>
+                </div>
+                <div class="card-corner card-corner-br">
+                  <b class="c-rank">A</b><span class="c-suit">♥</span>
+                </div>
+                <div class="pip-ace">♥</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 2: Flipped Spade King -->
+          <div class="showcase-card showcase-c2 face-up spade">
+            <div class="card-inner">
+              <div class="card-face card-front">
+                <div class="card-corner card-corner-tl">
+                  <b class="c-rank">K</b><span class="c-suit">♠</span>
+                </div>
+                <div class="card-corner card-corner-br">
+                  <b class="c-rank">K</b><span class="c-suit">♠</span>
+                </div>
+                <div class="card-face-center">
+                  <div class="royal-figure">
+                    <svg class="royal-card-svg royal-king" viewBox="0 0 512 512" width="38" height="38" fill="var(--spade-color)" xmlns="http://www.w3.org/2000/svg">
+                      <path d="m408.256 119.46-37.7 52.165 19.57 44.426 34.8-37.214-16.67-59.375zm86.074 12.513L384.44 249.498 334.01 135.02l-75.162 132.947-86.948-131.78-33.334 114.122L17.922 132.83l39.3 127.6c1.945-.348 3.94-.54 5.98-.54 18.812 0 34.26 15.452 34.26 34.262 0 13.823-8.346 25.822-20.235 31.22l5.337 17.33c12.425 25.466 71.863 45.152 176.582 47.206 110.805 2.174 178.12-17.54 189.854-47.207h-.002l4.357-20.26c-16.836-2.114-30.02-16.612-30.02-33.986 0-18.81 15.45-34.262 34.263-34.262 3.513 0 6.91.54 10.11 1.54l26.622-123.762zm-391.77 2.04 1.22 56.337 25.56 24.89 9.592-32.842-36.37-48.386zm150.585 2.91-24.483 51.36 28.955 43.885 24.922-44.08-29.395-51.166zm204.453 135.962c-8.712 0-15.575 6.862-15.575 15.572 0 8.71 6.863 15.574 15.575 15.574s15.572-6.863 15.572-15.573-6.86-15.572-15.572-15.572zM63.2 278.58c-8.71 0-15.573 6.864-15.573 15.574s6.862 15.573 15.574 15.573c8.713 0 15.573-6.862 15.573-15.573 0-8.71-6.86-15.574-15.572-15.574zm130.33 17.842c18.812 0 34.26 15.45 34.26 34.262 0 18.81-15.448 34.26-34.26 34.26-18.813 0-34.262-15.45-34.262-34.26s15.45-34.262 34.26-34.262zm131.234 0c18.812 0 34.26 15.45 34.26 34.262 0 18.81-15.448 34.26-34.26 34.26-18.813 0-34.262-15.45-34.262-34.26s15.45-34.262 34.262-34.262zm-131.235 18.69c-8.713 0-15.573 6.86-15.573 15.572 0 8.71 6.86 15.574 15.572 15.574 8.71 0 15.572-6.864 15.572-15.574s-6.86-15.573-15.573-15.573zm131.234 0c-8.712 0-15.573 6.86-15.573 15.572 0 8.71 6.862 15.574 15.574 15.574s15.574-6.864 15.574-15.574-6.862-15.573-15.574-15.573z"/>
+                    </svg>
+                  </div>
+                  <span class="face-letter">K</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 3: Card Back (hover to flip) -->
+          <div class="showcase-card showcase-c3">
+            <div class="card-inner">
+              <div class="card-face card-back">
+                <div class="card-back-frame"></div>
+              </div>
+              <div class="card-face card-front heart">
+                <div class="card-corner card-corner-tl">
+                  <b class="c-rank">Q</b><span class="c-suit">♥</span>
+                </div>
+                <div class="card-corner card-corner-br">
+                  <b class="c-rank">Q</b><span class="c-suit">♥</span>
+                </div>
+                <div class="card-face-center">
+                  <div class="royal-figure">
+                    <svg class="royal-card-svg royal-queen" viewBox="0 0 512 512" width="38" height="38" fill="var(--heart-color)" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M188.28 59.47c-19.086 0-34.56 15.468-34.56 34.56 0 16.077 10.983 29.57 25.843 33.44l-35.344 81.936c15.877 2.885 27.905 16.784 27.905 33.5 0 18.806-15.23 34.063-34.03 34.063-18.802 0-34.032-15.258-34.032-34.064 0-13.37 7.703-24.924 18.906-30.5l-50.814-79.22c8.007-5.82 13.22-15.24 13.22-25.905 0-17.693-14.314-32.06-32-32.06-17.688 0-32.032 14.37-32.032 32.06 0 17.693 14.344 32.032 32.03 32.032.734 0 1.468-.014 2.188-.062l41.907 227h316l41.936-227c.72.048 1.455.063 2.188.063 17.686 0 32.03-14.34 32.03-32.032 0-17.693-14.344-32.06-32.03-32.06-17.687 0-32.03 14.37-32.03 32.06-.002 10.723 5.286 20.187 13.373 26l-50.656 79.532c10.778 5.72 18.126 17.04 18.126 30.094 0 18.806-15.23 34.063-34.03 34.063s-34.032-15.258-34.032-34.064c0-17.11 12.602-31.267 29.03-33.687l-34.75-81.532c15.275-3.577 26.657-17.287 26.657-33.657 0-19.094-15.474-34.56-34.56-34.56-19.09 0-34.564 15.468-34.564 34.56 0 14.798 9.308 27.415 22.375 32.345L268 202.345c14.62 4.52 25.25 18.112 25.25 34.218 0 19.796-16.053 35.843-35.844 35.844-19.79 0-35.812-16.047-35.812-35.844 0-15.158 9.403-28.102 22.687-33.343l-44.124-76.72c13.234-4.845 22.688-17.552 22.688-32.47 0-19.094-15.475-34.56-34.563-34.56zM97.438 384.936c-23.978 3.763-22.86 39.844 4.188 39.844h6.656l.064.345h294.28l.063-.344h7.625c26.034 0 27.88-35.928 4.313-39.842H97.437z"/>
+                    </svg>
+                  </div>
+                  <span class="face-letter">Q</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="visual-note">Hover any card to flip it over!</div>
+      </div>
+    </main>
+
+    <!-- How It Works Section -->
+    <section class="how-section">
+      <h2 class="section-title">How To Play</h2>
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-num">1</div>
+          <div class="step-icon">
+            <svg class="step-icon-svg" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M4 14L16 4L28 14V27C28 27.5 27.5 28 27 28H19V19H13V28H5C4.5 28 4 27.5 4 27V14Z" fill="#E6EEF8" stroke="#3A5A8C" stroke-width="2" stroke-linejoin="round"/>
+              <path d="M16 4L4 14H8V26H24V14H28L16 4Z" fill="#C2D8F2" opacity="0.3"/>
+            </svg>
+          </div>
+          <h3 class="step-heading">Create or Join</h3>
+          <p class="step-desc">Start a private room and share the 6-character code with your friend, or join theirs instantly.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">2</div>
+          <div class="step-icon">
+            <svg class="step-icon-svg" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="3" y="6" width="18" height="23" rx="3.5" fill="#FFE2E8" stroke="#E05C73" stroke-width="2" transform="rotate(-10 3 6)"/>
+              <path d="M9 15 C9 13 11 11.5 13 13 C15 11.5 17 13 17 15 C17 17.5 13 20 13 20 C13 20 9 17.5 9 15 Z" fill="#E05C73"/>
+              <rect x="11" y="4" width="18" height="23" rx="3.5" fill="#E6EEF8" stroke="#3A5A8C" stroke-width="2" transform="rotate(8 11 4)"/>
+              <path d="M20 11 C18 13.5 15.5 15.5 15.5 17 C15.5 18.5 16.8 19.5 18.2 19.5 C19.2 19.5 20 18.8 20 18.8 C20 18.8 20.8 19.5 21.8 19.5 C23.2 19.5 24.5 18.5 24.5 17 C24.5 15.5 22 13.5 20 11 Z" fill="#3A5A8C"/>
+            </svg>
+          </div>
+          <h3 class="step-heading">Flip in Turns</h3>
+          <p class="step-desc">On your turn, flip 2 cards. If rank and suit match, you get +1 point and a free bonus turn!</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">3</div>
+          <div class="step-icon">
+            <svg class="step-icon-svg" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M10 7 H22 V14 C22 18 19 21 16 21 C13 21 10 18 10 14 V7 Z" fill="#F4C430" stroke="#B8860B" stroke-width="1.8"/>
+              <path d="M10 9 H7 C5 9 5 14 8 15 L10 15" stroke="#B8860B" stroke-width="1.6" stroke-linecap="round"/>
+              <path d="M22 9 H25 C27 9 27 14 24 15 L22 15" stroke="#B8860B" stroke-width="1.6" stroke-linecap="round"/>
+              <path d="M14.5 21 H17.5 V25 H14.5 Z" fill="#F4C430" stroke="#B8860B" stroke-width="1.6"/>
+              <path d="M11 25 H21 V28 H11 Z" rx="1.5" fill="#E5A93C" stroke="#B8860B" stroke-width="1.6"/>
+            </svg>
+          </div>
+          <h3 class="step-heading">Win The Match</h3>
+          <p class="step-desc">All 26 pairs cleared! The player with the highest pairs wins the victory trophy and bragging rights.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features Banner -->
+    <section class="features-bar">
+      <div class="feat-pill">
+        <svg class="feat-icon-svg" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="5" cy="5" r="3" fill="#FFE2E8" stroke="#E05C73" stroke-width="1.2"/>
+          <circle cx="11" cy="5" r="3" fill="#E0F7ED" stroke="#2EC484" stroke-width="1.2"/>
+          <path d="M1.5 13 C1.5 10.5 3 9.5 5 9.5 C7 9.5 8.5 10.5 8.5 13" stroke="#E05C73" stroke-width="1.2" stroke-linecap="round"/>
+          <path d="M9.5 10.5 C10.8 9.8 12.2 10 13.5 11 C14.2 11.6 14.5 12.3 14.5 13" stroke="#2EC484" stroke-width="1.2" stroke-linecap="round"/>
+        </svg>
+        Hotseat &amp; Live Online P2P
+      </div>
+      <div class="feat-pill">
+        <svg class="feat-icon-svg" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M6 13 V3 L13 1.5 V11.5" stroke="#3A5A8C" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="4" cy="13" r="2" fill="#E6EEF8" stroke="#3A5A8C" stroke-width="1.2"/>
+          <circle cx="11" cy="11.5" r="2" fill="#E6EEF8" stroke="#3A5A8C" stroke-width="1.2"/>
+        </svg>
+        Synthesized Web Audio Effects
+      </div>
+      <div class="feat-pill">
+        <svg class="feat-icon-svg" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="2" y="2" width="12" height="12" rx="2" stroke="#2EC484" stroke-width="1.4"/>
+          <path d="M2 6 H14 M6 2 V14" stroke="#2EC484" stroke-width="1.2" stroke-linecap="round"/>
+        </svg>
+        100% Fits Any Screen Without Scrolling
+      </div>
+      <div class="feat-pill">
+        <svg class="feat-icon-svg" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M2 13 H14 M3 13 L4 5 L8 8.5 L12 5 L13 13 H3 Z" fill="#F4C430" stroke="#B8860B" stroke-width="1.2"/>
+        </svg>
+        Reactive Crowns &amp; Turn Indicators
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="landing-footer">
+      <div class="footer-left">
+        <svg class="brand-icon-svg" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:18px; height:18px; margin-right:6px;">
+          <rect x="2" y="5" width="16" height="21" rx="3" fill="#FFE2E8" stroke="#E05C73" stroke-width="1.8" transform="rotate(-10 2 5)"/>
+          <path d="M7 13 C7 11 9 9.5 11 11 C13 9.5 15 11 15 13 C15 15.5 11 18 11 18 C11 18 7 15.5 7 13 Z" fill="#E05C73"/>
+          <rect x="10" y="3" width="16" height="21" rx="3" fill="#E6EEF8" stroke="#3A5A8C" stroke-width="1.8" transform="rotate(8 10 3)"/>
+        </svg>
+        <span>Match-da-Card &bull; Handcrafted with pastel love</span>
+      </div>
+      <div class="footer-right">
+        <span class="dev-signature">Made by Ary4n-dev</span>
+      </div>
+    </footer>
+
+  </div>
+
+  <script>
+    // Landing join room interaction
+    const joinInput = document.getElementById('landing-join-code');
+    const joinBtn = document.getElementById('btn-landing-join');
+
+    function doJoin() {
+      const code = joinInput.value.trim().toUpperCase();
+      if (!code || code.length < 3) {
+        joinInput.focus();
+        alert('Please enter a valid room code!');
+        return;
+      }
+      window.location.href = `index.html?room=${encodeURIComponent(code)}`;
+    }
+
+    joinBtn.addEventListener('click', doJoin);
+    joinInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') doJoin();
+    });
+  </script>
+</body>
+</html>

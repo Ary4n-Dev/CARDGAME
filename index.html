@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MATCH-DA-CARD</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Gaegu:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <!-- PeerJS for live WebRTC multiplayer without backend server -->
+  <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+</head>
+<body>
+
+  <!-- SVG Filters for Genuine Rough Crayon Texture (based on user wax crayon reference) -->
+  <svg class="svg-filters" xmlns="http://www.w3.org/2000/svg" width="0" height="0" style="position: absolute; width: 0; height: 0; overflow: hidden; pointer-events: none;" aria-hidden="true">
+    <defs>
+      <!-- Rough crayon border stroke filter -->
+      <filter id="crayon-border" x="-10%" y="-10%" width="120%" height="120%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.05 0.22" numOctaves="3" result="noise" />
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="2.8" xChannelSelector="R" yChannelSelector="G" />
+      </filter>
+
+      <!-- Rough crayon line stroke filter -->
+      <filter id="crayon-line" x="-10%" y="-10%" width="120%" height="120%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.04 0.25" numOctaves="4" result="noise" />
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="3" xChannelSelector="R" yChannelSelector="G" />
+      </filter>
+
+      <!-- Rough crayon stroke aliases -->
+      <filter id="crayon-rough" x="-10%" y="-10%" width="120%" height="120%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.05 0.22" numOctaves="3" result="noise" />
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="2.8" xChannelSelector="R" yChannelSelector="G" />
+      </filter>
+      <filter id="crayon-stroke" x="-10%" y="-10%" width="120%" height="120%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.04 0.25" numOctaves="4" result="noise" />
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="3" xChannelSelector="R" yChannelSelector="G" />
+      </filter>
+    </defs>
+  </svg>
+
+  <!-- Header -->
+  <header class="game-header">
+    <a href="landing.html" class="btn-home-back" title="Back to Home / Landing">
+      <svg class="btn-icon-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M3 10.5L12 3L21 10.5V20C21 20.55 20.55 21 20 21H15V14H9V21H4C3.45 21 3 20.55 3 20V10.5Z" fill="#7DDCB5" stroke="#26AA72" stroke-width="1.8" stroke-linejoin="round"/>
+        <path d="M12 3L3 10.5H6V19H18V10.5H21L12 3Z" fill="#A8EAD0" opacity="0.3"/>
+      </svg>
+      Home
+    </a>
+    <div class="header-doodle-line left"></div>
+    <h1 class="game-title">
+      <svg class="title-icon-svg" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="2" y="5" width="16" height="21" rx="3" fill="#FFE2E8" stroke="#E05C73" stroke-width="1.8" transform="rotate(-10 2 5)"/>
+        <path d="M7 13 C7 11 9 9.5 11 11 C13 9.5 15 11 15 13 C15 15.5 11 18 11 18 C11 18 7 15.5 7 13 Z" fill="#E05C73"/>
+        <rect x="10" y="3" width="16" height="21" rx="3" fill="#E6EEF8" stroke="#3A5A8C" stroke-width="1.8" transform="rotate(8 10 3)"/>
+        <path d="M18 9 C16 11.5 13.5 13.5 13.5 15 C13.5 16.5 14.8 17.5 16.2 17.5 C17.2 17.5 18 16.8 18 16.8 C18 16.8 18.8 17.5 19.8 17.5 C21.2 17.5 22.5 16.5 22.5 15 C22.5 13.5 20 11.5 18 9 Z" fill="#3A5A8C"/>
+      </svg>
+      Match-da-Card
+      <svg class="title-icon-svg" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="2" y="5" width="16" height="21" rx="3" fill="#E6EEF8" stroke="#3A5A8C" stroke-width="1.8" transform="rotate(-8 2 5)"/>
+        <path d="M10 11 C8 13.5 5.5 15.5 5.5 17 C5.5 18.5 6.8 19.5 8.2 19.5 C9.2 19.5 10 18.8 10 18.8 C10 18.8 10.8 19.5 11.8 19.5 C13.2 19.5 14.5 18.5 14.5 17 C14.5 15.5 12 13.5 10 11 Z" fill="#3A5A8C"/>
+        <rect x="10" y="3" width="16" height="21" rx="3" fill="#FFE2E8" stroke="#E05C73" stroke-width="1.8" transform="rotate(10 10 3)"/>
+        <path d="M17 11 C17 9 19 7.5 21 9 C23 7.5 25 9 25 11 C25 13.5 21 16 21 16 C21 16 17 13.5 17 11 Z" fill="#E05C73"/>
+      </svg>
+    </h1>
+    <div class="header-doodle-line right"></div>
+  </header>
+
+  <!-- Top Turn Indicator Banner -->
+  <div class="top-turn-container">
+    <div class="turn-ribbon" id="turn-ribbon">
+      <div class="ribbon-text" id="ribbon-text">Player 1's Turn!</div>
+      <div class="ribbon-sub" id="ribbon-sub">Flip 2 cards to find a match~</div>
+    </div>
+  </div>
+
+  <!-- Main Game Arena: Left Player | Center Board | Right Player -->
+  <div class="game-arena">
+    <!-- Left: Player 1 -->
+    <aside class="player-side-panel left-side" id="p1-panel" data-player="1">
+      <div class="turn-crown" id="p1-crown">
+        <svg class="icon-crown-svg" viewBox="0 0 24 24" width="22" height="22" fill="#F4C430" stroke="#B8860B" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M2 19h20M4 19l2-12 5 6 5-6 2 12H4z"/>
+          <circle cx="6" cy="7" r="1.5" fill="#E05C73"/>
+          <circle cx="12" cy="5" r="1.8" fill="#3A5A8C"/>
+          <circle cx="18" cy="7" r="1.5" fill="#E05C73"/>
+        </svg>
+      </div>
+      <div class="player-avatar">
+        <svg class="avatar-svg" viewBox="0 0 36 36" width="34" height="34" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="18" cy="18" r="16" fill="#FFE2E8" stroke="#F4A0B4" stroke-width="1.8"/>
+          <path d="M18 10 C14 13 14 17 18 20 C22 17 22 13 18 10 Z" fill="#E05C73"/>
+          <path d="M13 16 C15 13 19 13 18 18 C14 19 12 18 13 16 Z" fill="#F07890"/>
+          <path d="M23 16 C21 13 17 13 18 18 C22 19 24 18 23 16 Z" fill="#F07890"/>
+          <path d="M18 20 Q18 26 18 26" stroke="#48A870" stroke-width="1.6" stroke-linecap="round"/>
+          <path d="M18 23 Q14 22 13 25" stroke="#48A870" stroke-width="1.4" stroke-linecap="round"/>
+          <path d="M18 22 Q22 21 23 24" stroke="#48A870" stroke-width="1.4" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <span class="player-name" id="p1-label">Player 1</span>
+      <span class="player-score" id="p1-score">0</span>
+    </aside>
+
+    <!-- Center: Cards Board -->
+    <main class="board-wrapper">
+      <div class="game-board" id="game-board" role="list" aria-label="Memory card grid"></div>
+    </main>
+
+    <!-- Right: Player 2 -->
+    <aside class="player-side-panel right-side" id="p2-panel" data-player="2">
+      <div class="turn-crown" id="p2-crown">
+        <svg class="icon-crown-svg" viewBox="0 0 24 24" width="22" height="22" fill="#F4C430" stroke="#B8860B" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M2 19h20M4 19l2-12 5 6 5-6 2 12H4z"/>
+          <circle cx="6" cy="7" r="1.5" fill="#E05C73"/>
+          <circle cx="12" cy="5" r="1.8" fill="#3A5A8C"/>
+          <circle cx="18" cy="7" r="1.5" fill="#E05C73"/>
+        </svg>
+      </div>
+      <div class="player-avatar">
+        <svg class="avatar-svg" viewBox="0 0 36 36" width="34" height="34" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="18" cy="18" r="16" fill="#E0F7ED" stroke="#7DDCB5" stroke-width="1.8"/>
+          <path d="M18 13 C15 9 11 12 14 16 C15 17 17 17 18 18 C19 17 21 17 22 16 C25 12 21 9 18 13 Z" fill="#2EC484"/>
+          <path d="M13 18 C9 15 12 11 16 14 C17 15 17 17 18 18 C17 19 17 21 16 22 C12 25 9 21 13 18 Z" fill="#26AA72"/>
+          <path d="M23 18 C27 15 24 11 20 14 C19 15 19 17 18 18 C19 19 19 21 20 22 C24 25 27 21 23 18 Z" fill="#26AA72"/>
+          <path d="M18 23 C15 27 11 24 14 20 C15 19 17 19 18 18 C19 19 21 19 22 20 C25 24 21 27 18 23 Z" fill="#2EC484"/>
+          <path d="M18 18 Q16 24 14 26" stroke="#1D8A5B" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <span class="player-name" id="p2-label">Player 2</span>
+      <span class="player-score" id="p2-score">0</span>
+    </aside>
+  </div>
+
+  <!-- Bottom Menu Box: All Controls & Multiplayer in a single neat box -->
+  <footer class="bottom-menu-box" id="bottom-menu-box">
+    <!-- Room / Multiplayer Controls -->
+    <div class="room-bar" id="room-bar">
+      <div class="room-actions" id="room-actions">
+        <button class="btn-room" id="btn-create-room">
+          <svg class="btn-icon-svg" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M10 2L12.2 7.8L18 10L12.2 12.2L10 18L7.8 12.2L2 10L7.8 7.8L10 2Z" fill="#F4C430" stroke="#B8860B" stroke-width="1.3"/>
+            <circle cx="15.5" cy="4.5" r="1.5" fill="#E05C73"/>
+          </svg>
+          Create Room
+        </button>
+        <div class="join-box">
+          <input type="text" id="input-room-code" placeholder="Room Code..." maxlength="8" autocomplete="off" />
+          <button class="btn-room" id="btn-join-room">
+            <svg class="btn-icon-svg" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M10 2 C13 2 16 5 15 11 L16.5 13.5 L13.5 13.5 L13 16 L10 14 L7 16 L6.5 13.5 L3.5 13.5 L5 11 C4 5 7 2 10 2 Z" fill="#3A5A8C" stroke="#223C64" stroke-width="1.2"/>
+              <circle cx="10" cy="7" r="2" fill="#FFE2E8"/>
+              <path d="M8.5 16 L10 19 L11.5 16 Z" fill="#E05C73"/>
+            </svg>
+            Join
+          </button>
+        </div>
+        <button class="btn-room-subtle" id="btn-local-mode" title="Play Hotseat on 1 screen">
+          <svg class="btn-icon-svg" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="7" cy="7" r="3.5" fill="#FFE2E8" stroke="#E05C73" stroke-width="1.2"/>
+            <circle cx="13" cy="7" r="3.5" fill="#E0F7ED" stroke="#2EC484" stroke-width="1.2"/>
+            <path d="M2.5 16 C2.5 13 4.5 12 7 12 C9.5 12 11.5 13 11.5 16" stroke="#E05C73" stroke-width="1.2" stroke-linecap="round"/>
+            <path d="M11 13 C12.5 12.2 14.5 12.5 16 13.5 C17 14.2 17.5 15.2 17.5 16" stroke="#2EC484" stroke-width="1.2" stroke-linecap="round"/>
+          </svg>
+          Pass &amp; Play
+        </button>
+      </div>
+
+      <!-- Live Room Connected / Info display -->
+      <div class="room-info" id="room-info" hidden>
+        <div class="room-badge">
+          <span class="room-dot" id="room-status-dot"></span>
+          <span id="room-status-text">Room: </span>
+          <b class="room-code-tag" id="display-room-code" title="Click to copy">------</b>
+          <button class="btn-copy-code" id="btn-copy-code" title="Copy code / link">
+            <svg class="btn-icon-svg" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:12px; height:12px; margin-right:3px;">
+              <rect x="5" y="5" width="8" height="9" rx="1.5" fill="#FFE885" stroke="#B8860B" stroke-width="1"/>
+              <path d="M3 11 V3 H10" stroke="#7A6855" stroke-width="1" stroke-linecap="round"/>
+            </svg>
+            Copy
+          </button>
+        </div>
+        <div class="role-badge" id="role-badge">Waiting for friend...</div>
+        <button class="btn-room-subtle" id="btn-leave-room" title="Leave room">
+          <svg class="btn-icon-svg" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:12px; height:12px; margin-right:3px;">
+            <path d="M2 14 H14 M4 14 V3 C4 2.5 4.5 2 5 2 H11 C11.5 2 12 2.5 12 3 V14" stroke="#9C4454" stroke-width="1.2"/>
+            <circle cx="9.5" cy="8" r="0.9" fill="#9C4454"/>
+          </svg>
+          Exit Room
+        </button>
+      </div>
+    </div>
+
+    <!-- Divider in bottom box -->
+    <div class="bottom-divider"></div>
+
+    <!-- Game Actions & Progress -->
+    <div class="controls">
+      <button class="btn-restart" id="btn-restart" title="Shuffle &amp; Restart">
+        <svg class="btn-icon-svg" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M3 14 L8 9 L11 12 L15 7" stroke="#2EC484" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M12 7 H16 V11" stroke="#2EC484" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M3 6 L7 10" stroke="#3A5A8C" stroke-width="1.6" stroke-linecap="round"/>
+          <path d="M12 13 L15 16" stroke="#3A5A8C" stroke-width="1.6" stroke-linecap="round"/>
+          <path d="M12 16 H16 V12" stroke="#3A5A8C" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Shuffle &amp; Restart
+      </button>
+      <div class="pair-counter">
+        <span>Pairs: </span>
+        <span id="pairs-found">0</span> / 26
+      </div>
+      <span class="dev-tag">Made by <a href="https://github.com/Ary4n-dev" target="_blank">Ary4n-dev</a></span>
+    </div>
+  </footer>
+
+  <!-- Particle Container -->
+  <div class="particles-container" id="particles-container" aria-hidden="true"></div>
+
+  <!-- Win Modal -->
+  <div class="modal-overlay" id="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-title" hidden>
+    <div class="modal-box">
+      <div class="modal-trophy">
+        <svg class="trophy-svg" viewBox="0 0 64 64" width="62" height="62" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M20 14 H44 V28 C44 36 38 42 32 42 C26 42 20 36 20 28 V14 Z" fill="#F4C430" stroke="#B8860B" stroke-width="2"/>
+          <path d="M20 18 H14 C10 18 10 28 16 30 L20 30" stroke="#B8860B" stroke-width="2" stroke-linecap="round"/>
+          <path d="M44 18 H50 C54 18 54 28 48 30 L44 30" stroke="#B8860B" stroke-width="2" stroke-linecap="round"/>
+          <path d="M29 42 H35 V50 H29 Z" fill="#F4C430" stroke="#B8860B" stroke-width="2"/>
+          <path d="M22 50 H42 V56 H22 Z" rx="2" fill="#E5A93C" stroke="#B8860B" stroke-width="2"/>
+          <circle cx="32" cy="27" r="5" fill="#FFE885" stroke="#B8860B" stroke-width="1"/>
+          <polygon points="32,23 33.5,26.5 37,27 34.3,29.3 35,33 32,31 29,33 29.7,29.3 27,27 30.5,26.5" fill="#B8860B"/>
+        </svg>
+      </div>
+      <h2 class="modal-title" id="modal-title">We have a winner!</h2>
+      <p class="modal-winner" id="modal-winner"></p>
+      <div class="modal-scores">
+        <div class="modal-score-item p1-color">
+          <span class="modal-avatar">
+            <svg class="avatar-svg" viewBox="0 0 36 36" width="30" height="30" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="18" cy="18" r="16" fill="#FFE2E8" stroke="#F4A0B4" stroke-width="1.8"/>
+              <path d="M18 10 C14 13 14 17 18 20 C22 17 22 13 18 10 Z" fill="#E05C73"/>
+              <path d="M13 16 C15 13 19 13 18 18 C14 19 12 18 13 16 Z" fill="#F07890"/>
+              <path d="M23 16 C21 13 17 13 18 18 C22 19 24 18 23 16 Z" fill="#F07890"/>
+            </svg>
+          </span>
+          <span id="modal-p1-name">Player 1</span>
+          <span class="modal-pts" id="modal-p1-score">0 pts</span>
+        </div>
+        <div class="modal-score-item p2-color">
+          <span class="modal-avatar">
+            <svg class="avatar-svg" viewBox="0 0 36 36" width="30" height="30" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="18" cy="18" r="16" fill="#E0F7ED" stroke="#7DDCB5" stroke-width="1.8"/>
+              <path d="M18 13 C15 9 11 12 14 16 C15 17 17 17 18 18 C19 17 21 17 22 16 C25 12 21 9 18 13 Z" fill="#2EC484"/>
+              <path d="M13 18 C9 15 12 11 16 14 C17 15 17 17 18 18 C17 19 17 21 16 22 C12 25 9 21 13 18 Z" fill="#26AA72"/>
+              <path d="M23 18 C27 15 24 11 20 14 C19 15 19 17 18 18 C19 19 19 21 20 22 C24 25 27 21 23 18 Z" fill="#26AA72"/>
+              <path d="M18 23 C15 27 11 24 14 20 C15 19 17 19 18 18 C19 19 21 19 22 20 C25 24 21 27 18 23 Z" fill="#2EC484"/>
+            </svg>
+          </span>
+          <span id="modal-p2-name">Player 2</span>
+          <span class="modal-pts" id="modal-p2-score">0 pts</span>
+        </div>
+      </div>
+      <button class="btn-play-again" id="btn-play-again">
+        <svg class="btn-icon-svg" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:18px; height:18px;">
+          <rect x="2" y="5" width="16" height="10" rx="4" fill="#3A5A8C" stroke="#223C64" stroke-width="1.3"/>
+          <path d="M6 7.5 V12.5 M3.5 10 H8.5" stroke="#FFE2E8" stroke-width="1.3" stroke-linecap="round"/>
+          <circle cx="12.5" cy="8.5" r="1" fill="#FFE885"/>
+          <circle cx="14.5" cy="10.5" r="1" fill="#E05C73"/>
+        </svg>
+        Play Again!
+      </button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
