@@ -1,14 +1,5 @@
-/**
- * Doodle Card Match — script.js
- * 2-Player Turn-Based Memory Matching Game
- * Vanilla HTML/CSS/JS, Web Audio API, no external dependencies
- */
-
 'use strict';
 
-/* ══════════════════════════════════════════════════
-   CONSTANTS & CONFIG
-   ══════════════════════════════════════════════════ */
 const RANKS = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
 const SUITS = ['heart', 'spade'];
 const SUIT_SYMBOL = { heart: '♥', spade: '♠' };
@@ -20,10 +11,6 @@ const PARTICLE_COUNT= 18;
 const PLAYER_NAMES = ['Player 1', 'Player 2'];
 const PLAYER_EMOJI = ['🌸', '🌊'];
 
-/**
- * Pip positions: [left%, top%]
- * Pips with top > 52 are rendered rotated 180° (upside-down) per card convention.
- */
 const PIP_POSITIONS = {
   'A':  [[50, 50]],
   '2':  [[50, 25], [50, 75]],
@@ -37,9 +24,6 @@ const PIP_POSITIONS = {
   '10': [[28, 15], [72, 15], [50, 28], [28, 42], [72, 42], [28, 58], [72, 58], [50, 72], [28, 85], [72, 85]],
 };
 
-/* ══════════════════════════════════════════════════
-   WEB AUDIO — Synthesised Sounds
-   ══════════════════════════════════════════════════ */
 let audioCtx = null;
 
 function getAudioCtx() {
@@ -66,18 +50,16 @@ function playTone({ frequency = 440, type = 'sine', duration = 0.12,
     gain.gain.exponentialRampToValueAtTime(Math.max(gainEnd, 0.001), now + duration);
     osc.start(now);
     osc.stop(now + duration + 0.01);
-  } catch (_) { /* silently skip if audio blocked */ }
+  } catch (_) {  }
 }
 
-/** Cute pop — flip sound */
 function soundFlip() {
   playTone({ frequency: 880, type: 'sine',   duration: 0.08, gainStart: 0.12 });
   playTone({ frequency: 660, type: 'triangle', duration: 0.06, gainStart: 0.06, startDelay: 0.04 });
 }
 
-/** Uplifting chime — match sound */
 function soundMatch() {
-  const notes = [523.25, 659.25, 783.99, 1046.5]; // C5 E5 G5 C6
+  const notes = [523.25, 659.25, 783.99, 1046.5];
   notes.forEach((f, i) => {
     playTone({ frequency: f, type: 'sine', duration: 0.35, gainStart: 0.14,
                startDelay: i * 0.09, detune: 5 });
@@ -86,13 +68,11 @@ function soundMatch() {
   });
 }
 
-/** Soft thud — mismatch */
 function soundMismatch() {
   playTone({ frequency: 220, type: 'triangle', duration: 0.18, gainStart: 0.16 });
   playTone({ frequency: 180, type: 'sawtooth', duration: 0.12, gainStart: 0.05, startDelay: 0.08 });
 }
 
-/** Win fanfare */
 function soundWin() {
   const melody = [523, 659, 784, 880, 784, 1047];
   melody.forEach((f, i) => {
@@ -101,29 +81,22 @@ function soundWin() {
   });
 }
 
-/* ══════════════════════════════════════════════════
-   GAME STATE & MULTIPLAYER
-   ══════════════════════════════════════════════════ */
 const state = {
-  deck:          [],   // array of card objects {id, rank, suit, index}
-  flipped:       [],   // indices of currently face-up (unmatched) cards
+  deck:          [],
+  flipped:       [],
   matched:       new Set(),
-  currentPlayer: 0,    // 0 or 1
+  currentPlayer: 0,
   scores:        [0, 0],
-  locked:        false, // prevent clicks during animations
+  locked:        false,
   pairsFound:    0,
-  // Multiplayer
   isMultiplayer: false,
   isHost:        false,
-  myPlayerIndex: 0,     // 0 = P1 (Host), 1 = P2 (Guest)
+  myPlayerIndex: 0,
   roomCode:      null,
   peer:          null,
   conn:          null,
 };
 
-/* ══════════════════════════════════════════════════
-   DOM REFS
-   ══════════════════════════════════════════════════ */
 const $board        = document.getElementById('game-board');
 const $p1Score      = document.getElementById('p1-score');
 const $p2Score      = document.getElementById('p2-score');
@@ -145,7 +118,6 @@ const $modalP2Score = document.getElementById('modal-p2-score');
 const $btnPlayAgain = document.getElementById('btn-play-again');
 const $particles    = document.getElementById('particles-container');
 
-// Multiplayer DOM
 const $roomActions    = document.getElementById('room-actions');
 const $roomInfo       = document.getElementById('room-info');
 const $btnCreateRoom  = document.getElementById('btn-create-room');
@@ -158,15 +130,11 @@ const $roomStatusText = document.getElementById('room-status-text');
 const $roleBadge      = document.getElementById('role-badge');
 const $btnLocalMode   = document.getElementById('btn-local-mode');
 
-/* ══════════════════════════════════════════════════
-   DECK GENERATION & SHUFFLE
-   ══════════════════════════════════════════════════ */
 function buildDeck() {
   const cards = [];
   let id = 0;
   for (const suit of SUITS) {
     for (const rank of RANKS) {
-      // Two copies per unique card (one pair)
       cards.push({ id: id++, rank, suit, pairKey: `${rank}-${suit}` });
       cards.push({ id: id++, rank, suit, pairKey: `${rank}-${suit}` });
     }
@@ -183,48 +151,35 @@ function shuffleArray(arr) {
   return a;
 }
 
-/* ══════════════════════════════════════════════════
-   CARD ELEMENT BUILDER
-   ══════════════════════════════════════════════════ */
-
-/** Build a single pip span at the given percentage position */
 function makePip(symbol, left, top, isAce) {
   const pip = document.createElement('span');
   pip.className = isAce ? 'pip pip-ace' : 'pip';
   pip.textContent = symbol;
   pip.style.left = `${left}%`;
   pip.style.top  = `${top}%`;
-  // Traditional card convention: bottom-half pips are upside-down
   if (!isAce && top > 52) {
     pip.style.transform = 'translate(-50%, -50%) rotate(180deg)';
   }
   return pip;
 }
 
-/**
- * Returns classy royal court heraldic regalia (Imperial Crown, Queen Tiara, Knight Helm)
- * tailored in the card's suit color.
- */
 function getRoyalSvg(rank, suit) {
   const isHeart = suit === 'heart';
   const suitColor = isHeart ? 'var(--heart-color)' : 'var(--spade-color)';
 
   if (rank === 'K') {
-    // Imperial King Crown (Lorc / Game-Icons)
     return `
       <svg class="royal-card-svg royal-king" viewBox="0 0 512 512" width="36" height="36" fill="${suitColor}" xmlns="http://www.w3.org/2000/svg">
         <path d="m408.256 119.46-37.7 52.165 19.57 44.426 34.8-37.214-16.67-59.375zm86.074 12.513L384.44 249.498 334.01 135.02l-75.162 132.947-86.948-131.78-33.334 114.122L17.922 132.83l39.3 127.6c1.945-.348 3.94-.54 5.98-.54 18.812 0 34.26 15.452 34.26 34.262 0 13.823-8.346 25.822-20.235 31.22l5.337 17.33c12.425 25.466 71.863 45.152 176.582 47.206 110.805 2.174 178.12-17.54 189.854-47.207h-.002l4.357-20.26c-16.836-2.114-30.02-16.612-30.02-33.986 0-18.81 15.45-34.262 34.263-34.262 3.513 0 6.91.54 10.11 1.54l26.622-123.762zm-391.77 2.04 1.22 56.337 25.56 24.89 9.592-32.842-36.37-48.386zm150.585 2.91-24.483 51.36 28.955 43.885 24.922-44.08-29.395-51.166zm204.453 135.962c-8.712 0-15.575 6.862-15.575 15.572 0 8.71 6.863 15.574 15.575 15.574s15.572-6.863 15.572-15.573-6.86-15.572-15.572-15.572zM63.2 278.58c-8.71 0-15.573 6.864-15.573 15.574s6.862 15.573 15.574 15.573c8.713 0 15.573-6.862 15.573-15.573 0-8.71-6.86-15.574-15.572-15.574zm130.33 17.842c18.812 0 34.26 15.45 34.26 34.262 0 18.81-15.448 34.26-34.26 34.26-18.813 0-34.262-15.45-34.262-34.26s15.45-34.262 34.26-34.262zm131.234 0c18.812 0 34.26 15.45 34.26 34.262 0 18.81-15.448 34.26-34.26 34.26-18.813 0-34.262-15.45-34.262-34.26s15.45-34.262 34.262-34.262zm-131.235 18.69c-8.713 0-15.573 6.86-15.573 15.572 0 8.71 6.86 15.574 15.572 15.574 8.71 0 15.572-6.864 15.572-15.574s-6.86-15.573-15.573-15.573zm131.234 0c-8.712 0-15.573 6.86-15.573 15.572 0 8.71 6.862 15.574 15.574 15.574s15.574-6.864 15.574-15.574-6.862-15.573-15.574-15.573z"/>
       </svg>
     `;
   } else if (rank === 'Q') {
-    // Elegant Queen Tiara (Lorc / Game-Icons)
     return `
       <svg class="royal-card-svg royal-queen" viewBox="0 0 512 512" width="36" height="36" fill="${suitColor}" xmlns="http://www.w3.org/2000/svg">
         <path d="M188.28 59.47c-19.086 0-34.56 15.468-34.56 34.56 0 16.077 10.983 29.57 25.843 33.44l-35.344 81.936c15.877 2.885 27.905 16.784 27.905 33.5 0 18.806-15.23 34.063-34.03 34.063-18.802 0-34.032-15.258-34.032-34.064 0-13.37 7.703-24.924 18.906-30.5l-50.814-79.22c8.007-5.82 13.22-15.24 13.22-25.905 0-17.693-14.314-32.06-32-32.06-17.688 0-32.032 14.37-32.032 32.06 0 17.693 14.344 32.032 32.03 32.032.734 0 1.468-.014 2.188-.062l41.907 227h316l41.936-227c.72.048 1.455.063 2.188.063 17.686 0 32.03-14.34 32.03-32.032 0-17.693-14.344-32.06-32.03-32.06-17.687 0-32.03 14.37-32.03 32.06-.002 10.723 5.286 20.187 13.373 26l-50.656 79.532c10.778 5.72 18.126 17.04 18.126 30.094 0 18.806-15.23 34.063-34.03 34.063s-34.032-15.258-34.032-34.064c0-17.11 12.602-31.267 29.03-33.687l-34.75-81.532c15.275-3.577 26.657-17.287 26.657-33.657 0-19.094-15.474-34.56-34.56-34.56-19.09 0-34.564 15.468-34.564 34.56 0 14.798 9.308 27.415 22.375 32.345L268 202.345c14.62 4.52 25.25 18.112 25.25 34.218 0 19.796-16.053 35.843-35.844 35.844-19.79 0-35.812-16.047-35.812-35.844 0-15.158 9.403-28.102 22.687-33.343l-44.124-76.72c13.234-4.845 22.688-17.552 22.688-32.47 0-19.094-15.475-34.56-34.563-34.56zM97.438 384.936c-23.978 3.763-22.86 39.844 4.188 39.844h6.656l.064.345h294.28l.063-.344h7.625c26.034 0 27.88-35.928 4.313-39.842H97.437z"/>
       </svg>
     `;
   } else if (rank === 'J') {
-    // Knight Visored Helm (Lorc / Game-Icons)
     return `
       <svg class="royal-card-svg royal-jack" viewBox="0 0 512 512" width="36" height="36" fill="${suitColor}" xmlns="http://www.w3.org/2000/svg">
         <path d="M258.094 18.5c-74.34 0-138.073 62.498-156.188 148.438 52.758-7.697 102.23-22.044 153.938-45.094l4.125-1.813 3.967 2.064c49.424 25.667 97.648 41.026 150.657 46.406-17.66-86.744-81.71-150-156.5-150zm1.28 122.156c-57.41 25.148-112.883 39.993-172.53 47 6.724 32.847 6.91 65.935-.5 98.938 89.29 41.602 231.648 43.154 340.594-.125-10.762-32.516-11.727-65.66-1.188-98.408-59.03-4.235-112.628-20.06-166.375-47.406zm-13.5 33.125h18.72v127.75h-18.72V173.78zm-58.78 11.19h18.687v101.655h-18.686V184.97zm115.72 0H321.5v101.655h-18.688V184.97zm-171.72 14.905h18.687v79.28h-18.686v-79.28zm227.72 0H377.5v79.28h-18.688v-79.28zm38.748 116.75c-14.302 4.282-28.96 7.873-43.78 10.844l-19.22 64.06c26.114-17.337 48.002-43.31 63-74.905zm-277.53 2.875c13.95 28.257 33.448 51.85 56.562 68.53l-17.688-58.905c-13.397-2.61-26.387-5.826-38.875-9.625zm213.156 11.656c-51.63 8.175-104.745 8.588-153.72 1.438l20.845 69.5c18 8.52 37.49 13.187 57.78 13.187 18.588 0 36.507-3.92 53.22-11.124l21.875-73zm-195.5 47.156c-19.436 21.562-36.416 44.367-48.594 72.157 70.233-8.736 133.743 14.684 168.03 50.75 39.684-35.607 103.71-55.685 170.876-44.25-15.08-29.372-33.32-51.982-53.938-74-31.187 31.75-71.53 51-115.968 51-46.568 0-88.65-21.142-120.406-55.658z"/>
@@ -248,23 +203,19 @@ function buildCardEl(cardData, index) {
   const inner = document.createElement('div');
   inner.className = 'card-inner';
 
-  /* ── Back face — CSS diamond pattern ── */
   const back = document.createElement('div');
   back.className = 'card-face card-back';
   const backFrame = document.createElement('div');
   backFrame.className = 'card-back-frame';
   back.appendChild(backFrame);
 
-  /* ── Front face ── */
   const front = document.createElement('div');
   front.className = 'card-face card-front';
 
-  // Top-left corner index
   const tlCorner = document.createElement('div');
   tlCorner.className = 'card-corner card-corner-tl';
   tlCorner.innerHTML = `<b class="c-rank">${rank}</b><span class="c-suit">${symbol}</span>`;
 
-  // Bottom-right corner index (CSS rotation)
   const brCorner = document.createElement('div');
   brCorner.className = 'card-corner card-corner-br';
   brCorner.innerHTML = `<b class="c-rank">${rank}</b><span class="c-suit">${symbol}</span>`;
@@ -275,7 +226,7 @@ function buildCardEl(cardData, index) {
   const isFace = rank === 'J' || rank === 'Q' || rank === 'K';
 
   if (isFace) {
-    /* ── Face card: Classy Royal Court SVG illustration ── */
+    
     const faceDiv = document.createElement('div');
     faceDiv.className = 'card-face-center';
     faceDiv.innerHTML = `
@@ -285,7 +236,7 @@ function buildCardEl(cardData, index) {
     front.appendChild(faceDiv);
 
   } else {
-    /* ── Pip card (A through 10) ── */
+    
     const pipArea = document.createElement('div');
     pipArea.className = 'card-pips';
     const positions = PIP_POSITIONS[rank];
@@ -304,10 +255,6 @@ function buildCardEl(cardData, index) {
   return card;
 }
 
-
-/* ══════════════════════════════════════════════════
-   BOARD RENDER
-   ══════════════════════════════════════════════════ */
 function renderBoard() {
   $board.innerHTML = '';
   state.deck.forEach((cardData, index) => {
@@ -321,9 +268,6 @@ function getCardEl(index) {
   return $board.querySelector(`.card[data-index="${index}"]`);
 }
 
-/* ══════════════════════════════════════════════════
-   UI UPDATES
-   ══════════════════════════════════════════════════ */
 function updateScoreUI() {
   $p1Score.textContent = state.scores[0];
   $p2Score.textContent = state.scores[1];
@@ -356,24 +300,19 @@ function updateTurnUI(goAgain = false) {
 
   if (goAgain) {
     $turnRibbon.classList.remove('go-again');
-    void $turnRibbon.offsetWidth; // force reflow
+    void $turnRibbon.offsetWidth;
     $turnRibbon.classList.add('go-again');
   } else {
     $turnRibbon.classList.remove('go-again');
   }
 
-  // Panel highlights
   $p1Panel.classList.toggle('active-player', p === 0);
   $p2Panel.classList.toggle('active-player', p === 1);
   $p1Crown.classList.toggle('visible', p === 0);
   $p2Crown.classList.toggle('visible', p === 1);
 }
 
-/* ══════════════════════════════════════════════════
-   CARD FLIP LOGIC & MULTIPLAYER CHECK
-   ══════════════════════════════════════════════════ */
 function onCardClick(cardEl, index) {
-  // In multiplayer: only active player can flip
   if (state.isMultiplayer) {
     if (state.myPlayerIndex !== state.currentPlayer) return;
     if (!state.conn || !state.conn.open) return;
@@ -384,10 +323,8 @@ function onCardClick(cardEl, index) {
   if (state.flipped.includes(index)) return;
   if (state.flipped.length >= 2) return;
 
-  // Perform local flip
   executeCardFlip(index);
 
-  // Broadcast flip to opponent
   if (state.isMultiplayer && state.conn && state.conn.open) {
     state.conn.send({ type: 'CARD_FLIP', index });
   }
@@ -406,9 +343,6 @@ function executeCardFlip(index) {
   }
 }
 
-/* ══════════════════════════════════════════════════
-   PAIR EVALUATION
-   ══════════════════════════════════════════════════ */
 function evaluatePair() {
   const [i1, i2] = state.flipped;
   const c1 = state.deck[i1];
@@ -417,14 +351,12 @@ function evaluatePair() {
   const el2 = getCardEl(i2);
 
   if (c1.pairKey === c2.pairKey) {
-    // ✅ MATCH
     soundMatch();
 
     setTimeout(() => {
       if (el1) el1.classList.add('matched');
       if (el2) el2.classList.add('matched');
 
-      // Burst particles at both cards
       if (el1) burstParticles(el1);
       if (el2) burstParticles(el2);
 
@@ -436,7 +368,7 @@ function evaluatePair() {
       state.locked  = false;
 
       updateScoreUI();
-      updateTurnUI(true); // bonus turn
+      updateTurnUI(true);
 
       if (state.pairsFound === 26) {
         setTimeout(showWinModal, 800);
@@ -444,7 +376,6 @@ function evaluatePair() {
     }, MATCH_DELAY);
 
   } else {
-    // ❌ MISMATCH
     soundMismatch();
 
     if (el1) el1.classList.add('shake');
@@ -455,7 +386,6 @@ function evaluatePair() {
       if (el2) el2.classList.remove('flipped', 'shake');
       state.flipped = [];
 
-      // Switch player
       state.currentPlayer = state.currentPlayer === 0 ? 1 : 0;
       updateTurnUI(false);
       state.locked = false;
@@ -463,9 +393,6 @@ function evaluatePair() {
   }
 }
 
-/* ══════════════════════════════════════════════════
-   PARTICLE BURST
-   ══════════════════════════════════════════════════ */
 const PARTICLE_COLORS = ['#FFB3C6','#B3F0D8','#D4C5F9','#FFE29A','#FFDAB9','#B3E5FC','#FFD700'];
 
 function burstParticles(cardEl) {
@@ -502,9 +429,6 @@ function burstParticles(cardEl) {
   }
 }
 
-/* ══════════════════════════════════════════════════
-   WIN MODAL
-   ══════════════════════════════════════════════════ */
 function showWinModal() {
   soundWin();
 
@@ -531,7 +455,6 @@ function showWinModal() {
   $modalP2Score.textContent  = `${s2} pts`;
   $modalOverlay.removeAttribute('hidden');
 
-  // Confetti in modal
   const confettiContainer = document.getElementById('modal-confetti');
   confettiContainer.innerHTML = '';
   for (let i = 0; i < 30; i++) {
@@ -552,11 +475,7 @@ function showWinModal() {
   }
 }
 
-/* ══════════════════════════════════════════════════
-   RESTART / INIT
-   ══════════════════════════════════════════════════ */
 function initGame(providedDeck = null) {
-  // Reset state
   state.deck          = providedDeck || buildDeck();
   state.flipped       = [];
   state.matched       = new Set();
@@ -565,21 +484,15 @@ function initGame(providedDeck = null) {
   state.locked        = false;
   state.pairsFound    = 0;
 
-  // Hide modal
   $modalOverlay.setAttribute('hidden', '');
 
-  // Clear particles
   $particles.innerHTML = '';
 
-  // Render
   renderBoard();
   updateScoreUI();
   updateTurnUI(false);
 }
 
-/* ══════════════════════════════════════════════════
-   PEERJS LIVE SERVER MULTIPLAYER SYSTEM
-   ══════════════════════════════════════════════════ */
 const PEER_PREFIX = 'cardgame-';
 
 function generateRandomCode() {
@@ -631,7 +544,6 @@ function initHostRoom() {
     conn.on('open', () => {
       $roomStatusDot.classList.add('connected');
       $roleBadge.textContent = 'Friend Connected!';
-      // Host generates and broadcasts initial shared deck
       const freshDeck = buildDeck();
       initGame(freshDeck);
       conn.send({
@@ -710,10 +622,8 @@ function setupConnectionHandlers(conn) {
     if (!data || !data.type) return;
 
     if (data.type === 'GAME_INIT') {
-      // Guest receives deck from host
       initGame(data.deck);
     } else if (data.type === 'CARD_FLIP') {
-      // Opponent flipped card
       executeCardFlip(data.index);
     } else if (data.type === 'RESTART') {
       initGame(data.deck);
@@ -753,9 +663,6 @@ function switchToLocalMode() {
   initGame();
 }
 
-/* ══════════════════════════════════════════════════
-   EVENT LISTENERS
-   ══════════════════════════════════════════════════ */
 $btnCreateRoom.addEventListener('click', () => {
   soundFlip();
   initHostRoom();
@@ -822,7 +729,6 @@ $btnPlayAgain.addEventListener('click', () => {
   }
 });
 
-// Keyboard support for cards
 $board.addEventListener('keydown', (e) => {
   if (e.key === 'Enter' || e.key === ' ') {
     const card = e.target.closest('.card');
@@ -833,7 +739,6 @@ $board.addEventListener('keydown', (e) => {
   }
 });
 
-// Make cards keyboard-focusable
 $board.addEventListener('focus', (e) => {
   const card = e.target.closest('.card');
   if (card && !card.hasAttribute('tabindex')) {
@@ -841,14 +746,10 @@ $board.addEventListener('focus', (e) => {
   }
 }, true);
 
-/* ══════════════════════════════════════════════════
-   DYNAMIC CARD SIZING — fills the board wrapper
-   exactly without ever scrolling
-   ══════════════════════════════════════════════════ */
 const COLS = 13;
 const ROWS = 4;
-const CARD_GAP = 4;       // px between cards
-const CARD_RATIO = 7 / 5; // height : width (standard playing card)
+const CARD_GAP = 4;
+const CARD_RATIO = 7 / 5;
 
 function updateCardSize() {
   const wrapper = document.querySelector('.board-wrapper');
@@ -873,28 +774,20 @@ function updateCardSize() {
 const _sizeObserver = new ResizeObserver(() => updateCardSize());
 _sizeObserver.observe(document.querySelector('.board-wrapper'));
 
-/* ══════════════════════════════════════════════════
-   BOOT & URL ROOM CHECK
-   ══════════════════════════════════════════════════ */
 updateCardSize();
 initGame();
 
-// Check if URL has ?room=CODE or ?action=create
 const urlParams = new URLSearchParams(window.location.search);
 const roomParam = urlParams.get('room');
 const actionParam = urlParams.get('action');
 
 if (roomParam) {
   $inputRoomCode.value = roomParam;
-  // Automatically join if room query param is present
   setTimeout(() => {
     joinGuestRoom(roomParam);
   }, 400);
 } else if (actionParam === 'create') {
-  // Automatically launch room creator if clicked from landing page
   setTimeout(() => {
     initHostRoom();
   }, 350);
 }
-
-

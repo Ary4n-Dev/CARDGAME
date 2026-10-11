@@ -9,27 +9,24 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Gaegu:wght@400;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
-  <!-- PeerJS for live WebRTC multiplayer without backend server -->
+  
   <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 </head>
 <body>
 
-  <!-- SVG Filters for Genuine Rough Crayon Texture (based on user wax crayon reference) -->
   <svg class="svg-filters" xmlns="http://www.w3.org/2000/svg" width="0" height="0" style="position: absolute; width: 0; height: 0; overflow: hidden; pointer-events: none;" aria-hidden="true">
     <defs>
-      <!-- Rough crayon border stroke filter -->
+      
       <filter id="crayon-border" x="-10%" y="-10%" width="120%" height="120%">
         <feTurbulence type="fractalNoise" baseFrequency="0.05 0.22" numOctaves="3" result="noise" />
         <feDisplacementMap in="SourceGraphic" in2="noise" scale="2.8" xChannelSelector="R" yChannelSelector="G" />
       </filter>
 
-      <!-- Rough crayon line stroke filter -->
       <filter id="crayon-line" x="-10%" y="-10%" width="120%" height="120%">
         <feTurbulence type="fractalNoise" baseFrequency="0.04 0.25" numOctaves="4" result="noise" />
         <feDisplacementMap in="SourceGraphic" in2="noise" scale="3" xChannelSelector="R" yChannelSelector="G" />
       </filter>
 
-      <!-- Rough crayon stroke aliases -->
       <filter id="crayon-rough" x="-10%" y="-10%" width="120%" height="120%">
         <feTurbulence type="fractalNoise" baseFrequency="0.05 0.22" numOctaves="3" result="noise" />
         <feDisplacementMap in="SourceGraphic" in2="noise" scale="2.8" xChannelSelector="R" yChannelSelector="G" />
@@ -41,7 +38,6 @@
     </defs>
   </svg>
 
-  <!-- Header -->
   <header class="game-header">
     <a href="landing.html" class="btn-home-back" title="Back to Home / Landing">
       <svg class="btn-icon-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -69,7 +65,6 @@
     <div class="header-doodle-line right"></div>
   </header>
 
-  <!-- Top Turn Indicator Banner -->
   <div class="top-turn-container">
     <div class="turn-ribbon" id="turn-ribbon">
       <div class="ribbon-text" id="ribbon-text">Player 1's Turn!</div>
@@ -77,9 +72,8 @@
     </div>
   </div>
 
-  <!-- Main Game Arena: Left Player | Center Board | Right Player -->
   <div class="game-arena">
-    <!-- Left: Player 1 -->
+    
     <aside class="player-side-panel left-side" id="p1-panel" data-player="1">
       <div class="turn-crown" id="p1-crown">
         <svg class="icon-crown-svg" viewBox="0 0 24 24" width="22" height="22" fill="#F4C430" stroke="#B8860B" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
@@ -104,12 +98,10 @@
       <span class="player-score" id="p1-score">0</span>
     </aside>
 
-    <!-- Center: Cards Board -->
     <main class="board-wrapper">
       <div class="game-board" id="game-board" role="list" aria-label="Memory card grid"></div>
     </main>
 
-    <!-- Right: Player 2 -->
     <aside class="player-side-panel right-side" id="p2-panel" data-player="2">
       <div class="turn-crown" id="p2-crown">
         <svg class="icon-crown-svg" viewBox="0 0 24 24" width="22" height="22" fill="#F4C430" stroke="#B8860B" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
@@ -134,9 +126,8 @@
     </aside>
   </div>
 
-  <!-- Bottom Menu Box: All Controls & Multiplayer in a single neat box -->
   <footer class="bottom-menu-box" id="bottom-menu-box">
-    <!-- Room / Multiplayer Controls -->
+    
     <div class="room-bar" id="room-bar">
       <div class="room-actions" id="room-actions">
         <button class="btn-room" id="btn-create-room">
@@ -168,7 +159,6 @@
         </button>
       </div>
 
-      <!-- Live Room Connected / Info display -->
       <div class="room-info" id="room-info" hidden>
         <div class="room-badge">
           <span class="room-dot" id="room-status-dot"></span>
@@ -193,10 +183,8 @@
       </div>
     </div>
 
-    <!-- Divider in bottom box -->
     <div class="bottom-divider"></div>
 
-    <!-- Game Actions & Progress -->
     <div class="controls">
       <button class="btn-restart" id="btn-restart" title="Shuffle &amp; Restart">
         <svg class="btn-icon-svg" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -216,10 +204,8 @@
     </div>
   </footer>
 
-  <!-- Particle Container -->
   <div class="particles-container" id="particles-container" aria-hidden="true"></div>
 
-  <!-- Win Modal -->
   <div class="modal-overlay" id="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-title" hidden>
     <div class="modal-box">
       <div class="modal-trophy">

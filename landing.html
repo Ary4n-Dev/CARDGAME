@@ -12,7 +12,6 @@
 </head>
 <body>
 
-  <!-- Floating animated doodle background elements -->
   <div class="doodle-float star star-1">✦</div>
   <div class="doodle-float star star-2">✧</div>
   <div class="doodle-float star star-3">✦</div>
@@ -23,22 +22,19 @@
   <div class="doodle-float spade-float spade-1">♠</div>
   <div class="doodle-float spade-float spade-2">♠</div>
 
-  <!-- SVG Filters for Genuine Rough Crayon Texture (based on user wax crayon reference) -->
   <svg class="svg-filters" xmlns="http://www.w3.org/2000/svg" width="0" height="0" style="position: absolute; width: 0; height: 0; overflow: hidden; pointer-events: none;" aria-hidden="true">
     <defs>
-      <!-- Rough crayon border stroke filter -->
+      
       <filter id="crayon-border" x="-10%" y="-10%" width="120%" height="120%">
         <feTurbulence type="fractalNoise" baseFrequency="0.05 0.22" numOctaves="3" result="noise" />
         <feDisplacementMap in="SourceGraphic" in2="noise" scale="2.8" xChannelSelector="R" yChannelSelector="G" />
       </filter>
 
-      <!-- Rough crayon line stroke filter -->
       <filter id="crayon-line" x="-10%" y="-10%" width="120%" height="120%">
         <feTurbulence type="fractalNoise" baseFrequency="0.04 0.25" numOctaves="4" result="noise" />
         <feDisplacementMap in="SourceGraphic" in2="noise" scale="3" xChannelSelector="R" yChannelSelector="G" />
       </filter>
 
-      <!-- Rough crayon stroke aliases -->
       <filter id="crayon-rough" x="-10%" y="-10%" width="120%" height="120%">
         <feTurbulence type="fractalNoise" baseFrequency="0.05 0.22" numOctaves="3" result="noise" />
         <feDisplacementMap in="SourceGraphic" in2="noise" scale="2.8" xChannelSelector="R" yChannelSelector="G" />
@@ -50,10 +46,8 @@
     </defs>
   </svg>
 
-  <!-- Main Container -->
   <div class="landing-page">
 
-    <!-- Top Navigation -->
     <header class="landing-header">
       <div class="brand">
         <svg class="brand-icon-svg" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -86,7 +80,6 @@
       </div>
     </header>
 
-    <!-- Hero Section -->
     <main class="hero-section">
       <div class="hero-content">
         <div class="badge-tag">
@@ -105,7 +98,6 @@
           A hand-drawn pastel card matching duel. Create a private room in one click, share your 6-digit code, and battle your friend live — or pass &amp; play on one screen.
         </p>
 
-        <!-- Room Action Box on Landing -->
         <div class="hero-action-box">
           <div class="action-top">
             <a href="index.html?action=create" class="btn-hero-primary">
@@ -140,7 +132,6 @@
           </div>
         </div>
 
-        <!-- Quick Stats / Highlights -->
         <div class="hero-perks">
           <div class="perk-item">
             <svg class="perk-icon-svg" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -168,10 +159,9 @@
         </div>
       </div>
 
-      <!-- Hero Visual: Interactive 3D Card Showcase -->
       <div class="hero-visual">
         <div class="card-stage">
-          <!-- Card 1: Flipped Heart Ace -->
+          
           <div class="showcase-card showcase-c1 face-up heart">
             <div class="card-inner">
               <div class="card-face card-front">
@@ -186,7 +176,6 @@
             </div>
           </div>
 
-          <!-- Card 2: Flipped Spade King -->
           <div class="showcase-card showcase-c2 face-up spade">
             <div class="card-inner">
               <div class="card-face card-front">
@@ -208,7 +197,6 @@
             </div>
           </div>
 
-          <!-- Card 3: Card Back (hover to flip) -->
           <div class="showcase-card showcase-c3">
             <div class="card-inner">
               <div class="card-face card-back">
@@ -237,7 +225,6 @@
       </div>
     </main>
 
-    <!-- How It Works Section -->
     <section class="how-section">
       <h2 class="section-title">How To Play</h2>
       <div class="steps-grid">
@@ -282,7 +269,6 @@
       </div>
     </section>
 
-    <!-- Features Banner -->
     <section class="features-bar">
       <div class="feat-pill">
         <svg class="feat-icon-svg" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -316,7 +302,6 @@
       </div>
     </section>
 
-    <!-- Footer -->
     <footer class="landing-footer">
       <div class="footer-left">
         <svg class="brand-icon-svg" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:18px; height:18px; margin-right:6px;">
@@ -334,7 +319,6 @@
   </div>
 
   <script>
-    // Landing join room interaction
     const joinInput = document.getElementById('landing-join-code');
     const joinBtn = document.getElementById('btn-landing-join');
 

@@ -1,9 +1,3 @@
-/* ====================================================
-   DOODLE CARD MATCH — style.css
-   Palette: Pastel Mint, Blush Pink, Lavender, Butter Yellow
-   ==================================================== */
-
-/* ── Reset & Root ─────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
@@ -28,7 +22,7 @@
   --shadow-soft:  rgba(100,80,60,0.11);
   --shadow-hover: rgba(100,80,60,0.20);
   --font-main:    'Patrick Hand', 'Gaegu', cursive;
-  /* Clean geometric rounded corners */
+  
   --border-radius-lg: 12px;
   --border-radius-md: 8px;
   --border-radius-sm: 6px;
@@ -40,7 +34,6 @@
   --flip-dur: 0.55s;
 }
 
-/* ── Body — exactly the viewport, nothing scrolls ── */
 body {
   font-family: var(--font-main);
   background-color: var(--cream);
@@ -49,13 +42,13 @@ body {
     radial-gradient(circle at 85% 75%, #d4f8ec55 0%, transparent 40%),
     radial-gradient(circle at 50% 50%, #e8e0ff33 0%, transparent 60%);
   color: var(--text-dark);
-  /* Lock to viewport — no scrolling ever */
+  
   height: 100dvh;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   align-items: center;
-  /* Small, consistent gap between every section */
+  
   gap: 5px;
   padding: 6px 10px 6px;
   position: relative;
@@ -78,7 +71,6 @@ body::before {
   pointer-events: none;
 }
 
-/* ── Header — compact, no margin ── */
 .game-header {
   flex-shrink: 0;
   position: relative;
@@ -164,7 +156,6 @@ body::before {
   opacity: 0.9;
 }
 
-/* ── Top Turn Ribbon Container ── */
 .top-turn-container {
   flex-shrink: 0;
   display: flex;
@@ -184,7 +175,6 @@ body::before {
   min-width: 220px;
 }
 
-/* Crayon rough border without distorting inner text */
 .turn-ribbon::before {
   content: '';
   position: absolute;
@@ -214,7 +204,6 @@ body::before {
   z-index: 1;
 }
 
-/* ── Main Game Arena (Left Player | Board | Right Player) ── */
 .game-arena {
   flex: 1 1 0;
   min-height: 0;
@@ -227,7 +216,6 @@ body::before {
   z-index: 1;
 }
 
-/* ── Player Side Panels (Left & Right) ── */
 .player-side-panel {
   flex-shrink: 0;
   width: 95px;
@@ -320,7 +308,6 @@ body::before {
 .turn-crown.visible { opacity: 1; animation: crown-bounce 1s ease infinite alternate; }
 @keyframes crown-bounce { 0%{transform:translateY(0) rotate(8deg)} 100%{transform:translateY(-6px) rotate(8deg)} }
 
-/* ── Center Board Wrapper ── */
 .board-wrapper {
   flex: 1 1 0;
   min-height: 0;
@@ -338,7 +325,6 @@ body::before {
   gap: var(--card-gap, 4px);
 }
 
-/* ── Bottom Menu Box — All controls in one cohesive box ── */
 .bottom-menu-box {
   flex-shrink: 0;
   width: 100%;
@@ -375,7 +361,6 @@ body::before {
   filter: url(#crayon-line);
 }
 
-/* ── Room Bar within Bottom Box ── */
 .room-bar {
   display: flex;
   align-items: center;
@@ -581,7 +566,6 @@ body::before {
   z-index: -1;
 }
 
-/* ── Controls within Bottom Box ── */
 .controls {
   display: flex;
   align-items: center;
@@ -655,22 +639,20 @@ body::before {
   opacity: 0.8;
 }
 
-/* ── Card wrapper — NEVER moves, only card-inner transforms ── */
 .card {
   width: var(--card-w);
   height: var(--card-h);
-  /* Large perspective = flat in-place spin rather than sweeping arc */
+  
   perspective: 2000px;
   perspective-origin: 50% 50%;
   cursor: pointer;
   position: relative;
   z-index: 0;
-  /* Scale the card-font relative to card width so pips scale with breakpoints */
+  
   font-size: calc(var(--card-w) * 0.135);
   transition: filter 0.15s ease;
 }
 
-/* Hover: only the inner element scales — .card box stays locked to grid */
 .card:hover:not(.flipped):not(.matched) {
   z-index: 10;
   filter: drop-shadow(0 5px 10px rgba(80,50,40,0.28));
@@ -680,13 +662,12 @@ body::before {
   transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-/* ── Card inner — 3D flip container ── */
 .card-inner {
   width: 100%;
-  height: 100%;           /* fill the full card-h, NO fixed px height */
+  height: 100%;           
   position: relative;
   transform-style: preserve-3d;
-  /* Smooth ease-in-out: card spins cleanly without bouncing past 180° */
+  
   transition: transform 0.48s ease-in-out;
   border-radius: 7px;
   transform-origin: 50% 50%;
@@ -697,7 +678,6 @@ body::before {
   transform: rotateY(180deg);
 }
 
-/* Hover while face-up: subtle scale stays on top of the flip */
 .card.flipped:hover .card-inner,
 .card.matched:hover .card-inner {
   z-index: 10;
@@ -705,19 +685,15 @@ body::before {
   transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-/* ── Both faces share these rules ── */
 .card-face {
   position: absolute;
-  inset: 0;               /* fills entire card-inner (= full card-h) */
+  inset: 0;               
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
   border-radius: 7px;
   overflow: hidden;
 }
 
-/* ════════════════════════════════════════
-   CARD BACK — Classic diamond hatch
-   ════════════════════════════════════════ */
 .card-back {
   position: absolute;
   inset: 0;
@@ -732,7 +708,6 @@ body::before {
   box-sizing: border-box;
 }
 
-/* Inner decorative border frame */
 .card-back-frame {
   position: absolute;
   inset: 4px;
@@ -740,7 +715,7 @@ body::before {
   border-radius: 4px;
   pointer-events: none;
 }
-/* Extra inner frame */
+
 .card-back-frame::after {
   content: '';
   position: absolute;
@@ -749,26 +724,22 @@ body::before {
   border-radius: 2px;
 }
 
-/* ════════════════════════════════════════
-   CARD FRONT — Real playing card face
-   ════════════════════════════════════════ */
 .card-front {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   transform: rotateY(180deg);
-  background: #ffffff;    /* clean white — proper card look */
+  background: #ffffff;    
   border: 1.8px solid #d4cdc5;
   border-radius: 7px;
-  display: block;         /* absolute positioning for children */
+  display: block;         
   box-sizing: border-box;
 }
 
 .card.heart .card-front { background: #fffcfd; border-color: #f2aebf; }
 .card.spade .card-front { background: #f9faff; border-color: #a8b8db; }
 
-/* ── Corner Indices ── */
 .card-corner {
   position: absolute;
   display: flex;
@@ -785,12 +756,12 @@ body::before {
   display: block;
   font-family: 'Gaegu', cursive;
   font-weight: 700;
-  font-size: 0.88em;   /* ~9.5px at 72px card */
+  font-size: 0.88em;   
   line-height: 1;
 }
 .c-suit {
   display: block;
-  font-size: 0.72em;   /* ~7.8px */
+  font-size: 0.72em;   
   line-height: 1;
 }
 
@@ -800,29 +771,27 @@ body::before {
 .card.spade .c-rank,
 .card.spade .c-suit { color: var(--spade-color); }
 
-/* ── Pip area — absolute fill between corners ── */
 .card-pips {
   position: absolute;
-  /* leave space for corner indices */
+  
   inset: 18% 10% 18% 10%;
 }
 
 .pip {
   position: absolute;
   transform: translate(-50%, -50%);
-  font-size: 0.92em;   /* ~9.9px — crisp at all sizes */
+  font-size: 0.92em;   
   line-height: 1;
   user-select: none;
   display: block;
 }
 
-/* Ace: single large pip centred in the whole card */
 .pip-ace {
   position: absolute;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  font-size: 2.6em;    /* ~28px at largest — classic ace */
+  font-size: 2.6em;    
   line-height: 1;
   user-select: none;
 }
@@ -832,7 +801,6 @@ body::before {
 .card.spade .pip,
 .card.spade .pip-ace { color: var(--spade-color); }
 
-/* ── Face cards (J Q K) with Classy Royal Art ── */
 .card-face-center {
   position: absolute;
   inset: 0;
@@ -890,7 +858,6 @@ body::before {
   filter: drop-shadow(0 4px 8px rgba(184, 134, 11, 0.35));
 }
 
-/* ── Classy Colored SVG Vector Icons (replacing emoji characters) ── */
 .btn-icon-svg,
 .ui-icon-svg {
   display: inline-block;
@@ -945,8 +912,6 @@ body::before {
   margin: 0 4px;
 }
 
-
-/* ── Matched state ── */
 .card.matched .card-front {
   animation: matched-pulse 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
@@ -968,7 +933,6 @@ body::before {
   100% { transform: rotateY(180deg) scale(1) rotate(0deg); }
 }
 
-/* ── Shake ────────────────────────────────────────── */
 .card.shake .card-inner {
   animation: card-shake 0.4s ease;
 }
@@ -981,7 +945,6 @@ body::before {
   100%{ transform: rotateY(180deg) translateX(0); }
 }
 
-/* ── Particles ────────────────────────────────────── */
 .particles-container {
   position: fixed;
   inset: 0;
@@ -1014,7 +977,6 @@ body::before {
   100% { transform: translate(var(--tx), var(--ty)) scale(0.1) rotate(720deg); opacity: 0; }
 }
 
-/* ── Win Modal ────────────────────────────────────── */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -1175,7 +1137,6 @@ body::before {
 .btn-play-again:hover { transform: translateY(-2px) scale(1.04); box-shadow: 4px 5px 0 var(--lavender-dark); }
 .btn-play-again:active { transform: translateY(1px); }
 
-/* ── Ribbon go-again flash ────────────────────────── */
 @keyframes ribbon-flash {
   0%,100% { transform: scale(1); }
   25% { transform: scale(1.08) rotate(-1deg); }
@@ -1183,7 +1144,6 @@ body::before {
 }
 .turn-ribbon.go-again { animation: ribbon-flash 0.6s ease 3; }
 
-/* ── Scrollbar ────────────────────────────────────── */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: var(--cream); }
 ::-webkit-scrollbar-thumb { background: var(--lavender-dark); border-radius: 8px; }
